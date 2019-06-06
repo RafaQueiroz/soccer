@@ -18,6 +18,11 @@ class TestGame(unittest.TestCase):
         game.add_player(Player('Sidney'))
         game.add_player(Player('Carlos Machado'))
 
-        game.sort()
+        game.sort_teams()
 
-        game.scores('Yelow', 'Rafael Queiroz')
+        game.scores('Yellow', 'Rafael Queiroz')
+        game.scores('Yellow', 'Rafael Queiroz')
+        game.scores('Blue', 'Eduardo')
+
+        game.end()
+        self.assertEqual('Yellow', game.winner)

@@ -1,4 +1,5 @@
 from datetime import datetime
+import sqlite3
 
 
 class OpResponse:
@@ -40,9 +41,13 @@ class Game:
 
         self.teams.append(team)
 
-    
-
-
+    def get_random_player(self):
+        
+        try:
+            return self.players.pop()
+        except Exception as e:
+            return Nonen
+            
     def add_player(self, player):
 
         if player is None:
@@ -70,7 +75,6 @@ class Game:
         self.find_team(team).scores(player)
 
 
-        
 class Team:
 
     def __init__(self, name):
@@ -105,50 +109,49 @@ class Player:
         self.gols += 1
 
 
-class App:
-    """
-    Manage to sort teams for a soccer game
-    """
+class Connection:
+
     def __init__(self):
-        self.players = []
+        self.conn = None
 
-
-    def add_player(self, name):
-        """
-        Add a player to the participants list to be sorted later.
-
-        Keywords arguments:
-        name -- Name of the player
-
-        """
-
-        if not name:
-            return OpResponse(False, 'The player name can\'t be empty.' )
-
-        if name in self.players:
-            return OpResponse(False, '{} already in the players list.'.format(name) )
-
-        self.players.append(name)
-        return OpResponse(True, '{} successfully added.'.format(name))
-
-    def remove_player(self, name):
-        
-        if not name:
-            return OpResponse(False, 'The player name can\'t be empty.' )
-
+    def check_if_db_exists(self, db_name):
         try:
-            self.players.remove(name)
-        except ValueError as erro:
-            return OpResponse(False, '{} not in the list'.format(name))
+            open(db_name, 'r')
+            return True
+        except FileNotFoundError as error:
+            return False
 
-        return OpResponse(True, '{} was succesfully removed.'.format(name))
+    def connect_db(self, db_name):
+        self.conn = sqlite3.connect(db_name)
 
-    def list_players(self):
-        return OpResponse(True, data={'players' : self.players})
+    def prepare_db(self):
+        self.conn.execute(''' 
+            CREATE TABLE player
+                (name, position, rate, gols)
+        ''')
+
+        self.conn.execute('''
+            CREATE TABLE game
+                (game_date, winner)
+        ''')
+
+        self.conn('''
+            CREATE TABLE team
+                (name, max_length)
+        ''')
 
 
-    def distribute_teams(self):
+class App:
+    def run(self):
+
+        conn = Connection()
         
-        pass
-    
+        db_exists = conn.check_if_db_exists('soccer.db')
 
+        conn.connect_db('soccer.db')
+
+        if not db_exists:
+            conn.prepare_db()
+    
+if __name__ == "__main__":
+    App().run()

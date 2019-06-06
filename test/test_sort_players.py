@@ -27,7 +27,8 @@ class TestSortPlayer(unittest.TestCase):
         reponse = app.add_player('Rafael')
 
         self.assertFalse(reponse.ok)
-        self.assertEqual('Rafael already in the players list.', reponse.message)
+        self.assertEqual(
+            'Rafael already in the players list.', reponse.message)
 
     def test_remove_player_successfully(self):
 
@@ -53,7 +54,6 @@ class TestSortPlayer(unittest.TestCase):
 
         self.assertFalse(reponse.ok)
         self.assertEqual('Rafael not in the list', reponse.message)
-
 
     def test_list_three_players(self):
         app = App()
